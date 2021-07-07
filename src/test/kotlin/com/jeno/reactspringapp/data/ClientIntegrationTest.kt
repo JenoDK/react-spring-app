@@ -1,6 +1,7 @@
 package com.jeno.reactspringapp.data
 
 import com.jeno.reactspringapp.data.model.Client
+import com.jeno.reactspringapp.data.model.Picture
 import com.jeno.reactspringapp.data.repository.ClientRepository
 import org.bson.types.Binary
 import org.hamcrest.MatcherAssert.assertThat
@@ -35,7 +36,8 @@ class ClientIntegrationTest {
 	fun testAddingImage(@Autowired clientRepository: ClientRepository) {
 		val path = "src/test/resources/image_example.png"
 		val readAllBytes = Files.readAllBytes(Paths.get(path))
-		var client = Client("Jeno", "jeno@jeno.com", Binary(readAllBytes))
+		val picture = Picture("jeno.jpg", Binary(readAllBytes))
+		var client = Client("Jeno", "jeno@jeno.com", picture)
 
 		val savedClient = clientRepository.save(client)
 
@@ -44,7 +46,7 @@ class ClientIntegrationTest {
 		val client1 = fetchedClient[0]
 		assertEquals(client1, savedClient)
 		assertNotNull(client1.picture)
-		assertTrue(client1.picture!!.data contentEquals readAllBytes)
+		assertTrue(client1.picture!!.picture!!.data contentEquals readAllBytes)
 	}
 
 }
