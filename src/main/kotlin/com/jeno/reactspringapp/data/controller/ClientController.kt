@@ -12,7 +12,7 @@ import org.springframework.web.server.ResponseStatusException
 
 
 @RestController
-@RequestMapping("api/clients_fetch")
+@RequestMapping("api/clients")
 class ClientController(private val clientRepository: ClientRepository) {
 
 	@GetMapping

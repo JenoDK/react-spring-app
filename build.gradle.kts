@@ -27,6 +27,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+	implementation("io.jsonwebtoken:jjwt:0.5.1")
+	implementation("javax.xml.bind:jaxb-api:2.3.1")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -63,6 +65,7 @@ tasks.register<Copy>("copyWebApp") {
 
 tasks.withType<KotlinCompile> {
 	// So that all the tasks run with ./gradlew build
+	// TODO We should not run our react app on the same port
 //	dependsOn("copyWebApp")
 	kotlinOptions {
 		freeCompilerArgs = listOf("-Xjsr305=strict")

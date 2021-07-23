@@ -1,13 +1,12 @@
 package com.jeno.reactspringapp.data.controller
 
 import com.jeno.reactspringapp.data.repository.PictureRepository
-import org.springframework.http.HttpStatus
+import com.jeno.reactspringapp.error.exception.ResourceNotFoundException
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("api/pictures")
@@ -18,7 +17,7 @@ class PictureController (val pictureRepository: PictureRepository) {
 		return pictureRepository.findById(id)
 				.filter { p -> p.picture != null }.
 				map { p -> p.picture!!.data }
-				.orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found") }
+				.orElseThrow { ResourceNotFoundException("Picture", "id", id) }
 	}
 
 }

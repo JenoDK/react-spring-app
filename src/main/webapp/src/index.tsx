@@ -3,16 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import {HashRouter} from "react-router-dom";
-// Do not remove import, it sets up the proxies
-// import SetupProxy from "./setupProxy"
+import {BrowserRouter} from "react-router-dom";
 
 ReactDOM.render(
   // HashRouter because otherwise we get Whitelabel error pages from Spring since there's no mapping once we f.e. refresh a /clients page
-  <HashRouter>
+  <BrowserRouter>
     <App />
-  </HashRouter>,
+  </BrowserRouter>,
   document.getElementById('root')
 );
 

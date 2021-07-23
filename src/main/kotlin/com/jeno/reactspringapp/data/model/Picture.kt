@@ -11,6 +11,8 @@ data class Picture(
 
 		val picture: Binary? = null,
 
+		var url: String? = null,
+
 		@Id
 		val id: String? = null,
 )
