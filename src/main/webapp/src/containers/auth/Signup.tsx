@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Card, Form} from "react-bootstrap";
+import {Alert, Card, Form} from "react-bootstrap";
 import {RouteComponentProps} from "react-router";
 import {Link} from 'react-router-dom';
 import LoaderButton from "../common/LoaderButton";
@@ -11,6 +11,7 @@ interface MainState {
     showErrors: boolean;
     errors: Errors;
     serverErrors: Map<string, string>;
+    error: string;
     formState: FormState;
     confirmationCode?: string;
 }
@@ -43,6 +44,7 @@ export default class Signup extends Component<RouteComponentProps<any>, MainStat
                 error_password: "Password needs to be min 8 characters and contain at least one uppercase and lowercase letter and one number",
                 error_confirmPassword: "Needs to be the same as password",
             },
+            error: "",
             formState: {}
         };
     }
@@ -122,14 +124,18 @@ export default class Signup extends Component<RouteComponentProps<any>, MainStat
                     })
                     .catch(response => {
                         this.setState({ isLoading: false })
-                        response.json()
-                            .then((json: any) => {
-                                let localErrorMap = new Map<string, string>()
-                                Object.keys(json).forEach((k: string) => {
-                                    localErrorMap.set(k, json[k])
+                        if (response instanceof Response) {
+                            response.json()
+                                .then((json: any) => {
+                                    let localErrorMap = new Map<string, string>()
+                                    Object.keys(json).forEach((k: string) => {
+                                        localErrorMap.set(k, json[k])
+                                    })
+                                    this.setState( { serverErrors: localErrorMap } )
                                 })
-                                this.setState( { serverErrors: localErrorMap } )
-                            })
+                        } else {
+                            this.setState({ error: "We're experiencing network issues, please try again later." })
+                        }
                     })
             }
         })
@@ -204,6 +210,9 @@ export default class Signup extends Component<RouteComponentProps<any>, MainStat
                         </Form.Text>
                     </form>
                 </Card.Body>
+                <Alert variant="danger" show={this.state.error != ""} onClose={() => this.setState({ error: "" })} dismissible>
+                    <p>{this.state.error}</p>
+                </Alert>
             </Card>
         );
     }

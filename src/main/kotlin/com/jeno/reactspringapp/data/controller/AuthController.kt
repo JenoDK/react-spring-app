@@ -5,7 +5,6 @@ import com.jeno.reactspringapp.data.model.User
 import com.jeno.reactspringapp.data.repository.UserRepository
 import com.jeno.reactspringapp.error.exception.ValidationException
 import com.jeno.reactspringapp.security.TokenProvider
-import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -33,8 +32,7 @@ class AuthController(
 				authenticationManager.authenticate(UsernamePasswordAuthenticationToken(loginRequest.email, loginRequest.password))
 		SecurityContextHolder.getContext().authentication = authentication
 		return ResponseEntity.ok()
-				.header(HttpHeaders.AUTHORIZATION, tokenProvider.createToken(authentication))
-				.body(authentication)
+				.body(AuthenticationResponse(authentication, tokenProvider.createToken(authentication)))
 	}
 
 	@PostMapping("/signup")
@@ -63,4 +61,6 @@ class AuthController(
 	data class LoginRequest(val email: String, val password: String)
 
 	data class SignUpRequest(val username: String, val email: String, val password: String)
+
+	data class AuthenticationResponse(val authentication: Authentication, val accessToken: String)
 }

@@ -1,17 +1,19 @@
 import React, {Component} from "react";
 import "./Login.scss";
-import {FACEBOOK_AUTH_URL, GOOGLE_AUTH_URL} from "../../constants/Constants";
+import {ACCESS_TOKEN, FACEBOOK_AUTH_URL, GOOGLE_AUTH_URL} from "../../constants/Constants";
 import fbLogo from '../../images/login/fb-logo.png';
 import googleLogo from '../../images/login/google-logo.png';
 import * as H from "history";
-import {Link, RouteComponentProps} from "react-router-dom";
+import {Link, Redirect, RouteComponentProps} from "react-router-dom";
 import {Alert, Card, Form, FormControl, FormGroup} from "react-bootstrap";
 import LoaderButton from "../common/LoaderButton";
 import {login} from "../../utils/ApiUtils";
+import { AuthContext } from "../../App";
 
 interface LoginProps extends RouteComponentProps {
     location: H.Location<any>;
     history: H.History<any>;
+    loginSuccess: () => void;
 }
 
 interface LoginState {
@@ -48,20 +50,31 @@ class Login extends Component<LoginProps, LoginState> {
 
     render() {
         return (
-            <Card className="center-card login-content">
-                <h1 className="login-title">Login to Jeno</h1>
-                <SocialLogin />
-                <Card.Body>
-                    <Alert variant="success" show={this.state.success_msg != ""} onClose={() => this.setState({ success_msg: "" })} dismissible>
-                        <p>{this.state.success_msg}</p>
-                    </Alert>
-                    <Alert variant="danger" show={this.state.error != ""} onClose={() => this.setState({ error: "" })} dismissible>
-                        <Alert.Heading>Error while trying to log in:</Alert.Heading>
-                        <p>{this.state.error}</p>
-                    </Alert>
-                    <LoginForm {...this.props} />
-                </Card.Body>
-            </Card>
+            <AuthContext.Consumer>
+                {value =>
+                    {if (value.authenticated) {
+                        return <Redirect to={{
+                            pathname: "/",
+                            state: { from: this.props.location }
+                        }}/>;
+                    } else {
+                        return <Card className="center-card login-content">
+                            <h1 className="login-title">Login to Jeno</h1>
+                            <SocialLogin />
+                            <Card.Body>
+                                <Alert variant="success" show={this.state.success_msg != ""} onClose={() => this.setState({ success_msg: "" })} dismissible>
+                                    <p>{this.state.success_msg}</p>
+                                </Alert>
+                                <Alert variant="danger" show={this.state.error != ""} onClose={() => this.setState({ error: "" })} dismissible>
+                                    <Alert.Heading>Error while trying to log in:</Alert.Heading>
+                                    <p>{this.state.error}</p>
+                                </Alert>
+                                <LoginForm {...this.props} />
+                            </Card.Body>
+                        </Card>
+                    }}
+                }
+            </AuthContext.Consumer>
         );
     }
 }
@@ -71,15 +84,15 @@ class SocialLogin extends Component {
         return (
             <Card.Body>
                 <a className="btn btn-block social-btn google" href={GOOGLE_AUTH_URL}>
-                    <img src={googleLogo} alt="Google" /> Log in with Google</a>
+                    <img src={googleLogo} alt="Google" />Log in with Google</a>
                 <a className="btn btn-block social-btn facebook" href={FACEBOOK_AUTH_URL}>
-                    <img src={fbLogo} alt="Facebook" /> Log in with Facebook</a>
+                    <img src={fbLogo} alt="Facebook" />Log in with Facebook</a>
             </Card.Body>
         );
     }
 }
 
-interface LoginFormState extends LoginState{
+interface LoginFormState extends LoginState {
     email: string;
     password: string;
     isLoading: boolean;
@@ -114,10 +127,11 @@ class LoginForm extends Component<LoginProps, LoginFormState> {
 
         login({email: this.state.email, password: this.state.password})
             .then(response => {
-                console.log("Login success! TODO redirect etc")
                 response.json()
                     .then(json => {
-                        console.log(json)
+                        localStorage.setItem(ACCESS_TOKEN, json.accessToken);
+                        this.props.loginSuccess()
+                        this.props.history.push("/");
                     })
                 this.setState({ isLoading: false })
             })
@@ -129,7 +143,7 @@ class LoginForm extends Component<LoginProps, LoginFormState> {
 
     render() {
         return (
-            <form onSubmit={this.handleSubmit}>
+            <form onSubmit={event => this.handleSubmit(event)}>
                 <FormGroup controlId="email">
                     <Form.Label>Email</Form.Label>
                     <FormControl

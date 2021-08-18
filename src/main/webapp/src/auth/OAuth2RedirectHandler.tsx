@@ -1,12 +1,16 @@
-import React, { Component } from 'react';
-import { ACCESS_TOKEN } from '../constants/Constants';
-import { RouteComponentProps, Redirect } from 'react-router-dom'
-import {RouteParams} from "../Routes";
+import React, {Component} from 'react';
+import {ACCESS_TOKEN} from '../constants/Constants';
+import {Redirect, RouteComponentProps} from 'react-router-dom'
 
-interface OAuth2RedirectHandlerProps extends RouteComponentProps<RouteParams> {}
-interface OAuth2RedirectHandlerState {}
+interface OAuth2RedirectHandlerProps extends RouteComponentProps {
+    loginSuccess: () => void;
+}
 
-class OAuth2RedirectHandler extends Component<OAuth2RedirectHandlerProps, OAuth2RedirectHandlerState> {
+class OAuth2RedirectHandler extends Component<OAuth2RedirectHandlerProps, {}> {
+
+    constructor(props: OAuth2RedirectHandlerProps) {
+        super(props);
+    }
 
     useQuery() {
         return new URLSearchParams(this.props.location.search)
@@ -19,6 +23,7 @@ class OAuth2RedirectHandler extends Component<OAuth2RedirectHandlerProps, OAuth2
 
         if (token) {
             localStorage.setItem(ACCESS_TOKEN, token);
+            this.props.loginSuccess()
             return <Redirect to={{
                 pathname: "/",
                 state: { from: this.props.location }

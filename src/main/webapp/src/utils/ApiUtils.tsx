@@ -9,7 +9,7 @@ import {ACCESS_TOKEN, API_BASE_URL} from "../constants/Constants";
  */
 export function callApi(url: String, opts?: RequestInit) {
     if (API_BASE_URL === undefined) {
-        throw Error("API URL is undefined")
+        return Promise.reject("API URL is undefined")
     }
     return fetch(API_BASE_URL + url, opts)
         .then(response => {
@@ -28,16 +28,18 @@ export function callApi(url: String, opts?: RequestInit) {
 export function callProtectedApi(url: String, options?: RequestInit) {
     let accessToken = localStorage.getItem(ACCESS_TOKEN)
     if (!accessToken) {
-        throw Error("Unauthenticated")
+        return Promise.reject("Unauthenticated: access token is not set")
     }
     let opts;
     if (options) {
         if (options.headers) {
             const requestHeaders: HeadersInit = new Headers(options.headers)
             requestHeaders.set("Authorization", 'Bearer ' + accessToken)
+            options.headers = requestHeaders
         } else {
             options.headers = { Authorization: 'Bearer ' + accessToken }
         }
+        opts = options
     } else {
         opts = {
             headers: { Authorization: 'Bearer ' + accessToken }
@@ -77,4 +79,23 @@ export function signup(b: SignupBody) {
             },
             method: 'POST', body: JSON.stringify(b)
         })
+}
+
+export function getCurrentUser() {
+    return callProtectedApi(
+        "/api/users/me",
+        {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+}
+
+export function defaultErrorLogging(error: any) {
+    if (error instanceof Response) {
+        error.text()
+            .then((error: any) => console.log(error))
+    } else {
+        console.log(error)
+    }
 }
