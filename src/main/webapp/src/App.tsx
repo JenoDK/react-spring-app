@@ -12,6 +12,8 @@ import NotFound from "./containers/error/NotFound";
 import ServerError from "./containers/error/ServerError";
 import {defaultErrorLogging, getCurrentUser} from "./utils/ApiUtils";
 import {ACCESS_TOKEN} from "./constants/Constants";
+import {Test} from "./containers/test/Test";
+import {PrivateRoute} from "./containers/common/PrivateRoute";
 
 interface User {
     id: string;
@@ -39,13 +41,28 @@ class App extends Component<RouteComponentProps<any>, AppState> {
         this.state = {}
 
         this.loadCurrentlyLoggedInUser = this.loadCurrentlyLoggedInUser.bind(this)
+        this.loginSuccess = this.loginSuccess.bind(this)
     }
 
     componentDidMount() {
         this.loadCurrentlyLoggedInUser();
     }
 
-    loadCurrentlyLoggedInUser() {
+    loginSuccess() {
+        this.loadCurrentlyLoggedInUser((props) => {
+            if (props.location
+                && props.location.state
+                && props.location.state.from
+                && props.location.state.from.state
+                && props.location.state.from.state.redirectAfterSuccess) {
+                this.props.history.push(props.location.state.from.state.redirectAfterSuccess);
+            } else {
+                this.props.history.push("/");
+            }
+        })
+    }
+
+    loadCurrentlyLoggedInUser(successCallback?: (props: any) => void) {
         getCurrentUser()
             .then(response => {
                 response.json()
@@ -57,6 +74,9 @@ class App extends Component<RouteComponentProps<any>, AppState> {
                                 user: json,
                             },
                         });
+                        if (successCallback) {
+                            successCallback(this.props)
+                        }
                     })
             })
             .catch(error => {
@@ -79,7 +99,8 @@ class App extends Component<RouteComponentProps<any>, AppState> {
                         <Switch>
                             <Route path="/" exact render={props => <Home {...props}/>} />
                             <Route path="/clients" exact render={props => <Clients {...props}/>} />
-                            <Route path="/login" exact render={props => <Login loginSuccess={this.loadCurrentlyLoggedInUser} {...props} />} />
+                            <PrivateRoute path="/test" exact component={Test} isAuthenticated={this.state.authContext.authenticated} />
+                            <Route path="/login" exact render={props => <Login loginSuccess={this.loginSuccess} {...props} />} />
                             <Route path="/signup" exact render={props => <Signup {...props} />} />
                             <Route path="/oauth2/redirect" exact render={props => <OAuth2RedirectHandler loginSuccess={this.loadCurrentlyLoggedInUser} {...props} />} />
                             <Route path="/404" component={NotFound} />
@@ -107,6 +128,9 @@ function Toolbar() {
                 </LinkContainer>
                 <LinkContainer to="/clients">
                     <Nav.Link href="#">Clients</Nav.Link>
+                </LinkContainer>
+                <LinkContainer to="/test">
+                    <Nav.Link href="#">Tests</Nav.Link>
                 </LinkContainer>
                 {authContext.authenticated ?
                     <LinkContainer to="/logout">

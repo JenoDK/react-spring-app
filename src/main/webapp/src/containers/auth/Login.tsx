@@ -4,11 +4,11 @@ import {ACCESS_TOKEN, FACEBOOK_AUTH_URL, GOOGLE_AUTH_URL} from "../../constants/
 import fbLogo from '../../images/login/fb-logo.png';
 import googleLogo from '../../images/login/google-logo.png';
 import * as H from "history";
-import {Link, Redirect, RouteComponentProps} from "react-router-dom";
+import {Link, Redirect, Route, RouteComponentProps} from "react-router-dom";
 import {Alert, Card, Form, FormControl, FormGroup} from "react-bootstrap";
 import LoaderButton from "../common/LoaderButton";
 import {login} from "../../utils/ApiUtils";
-import { AuthContext } from "../../App";
+import {AuthContext} from "../../App";
 
 interface LoginProps extends RouteComponentProps {
     location: H.Location<any>;
@@ -29,6 +29,10 @@ class Login extends Component<LoginProps, LoginState> {
             error: "",
             success_msg: ""
         };
+    }
+
+    useQuery() {
+        return new URLSearchParams(this.props.location.search)
     }
 
     componentDidMount() {
@@ -53,10 +57,17 @@ class Login extends Component<LoginProps, LoginState> {
             <AuthContext.Consumer>
                 {value =>
                     {if (value.authenticated) {
-                        return <Redirect to={{
-                            pathname: "/",
-                            state: { from: this.props.location }
-                        }}/>;
+                        let query = this.useQuery();
+                        const redirect_url = query.get("redirect_url");
+                        if (redirect_url) {
+                            window.location.href = redirect_url + '?token=' + localStorage.getItem(ACCESS_TOKEN);
+                            return (<div/>);
+                        } else {
+                            return <Redirect to={{
+                                pathname: "/",
+                                state: { from: this.props.location }
+                            }}/>;
+                        }
                     } else {
                         return <Card className="center-card login-content">
                             <h1 className="login-title">Login to Jeno</h1>
@@ -131,7 +142,6 @@ class LoginForm extends Component<LoginProps, LoginFormState> {
                     .then(json => {
                         localStorage.setItem(ACCESS_TOKEN, json.accessToken);
                         this.props.loginSuccess()
-                        this.props.history.push("/");
                     })
                 this.setState({ isLoading: false })
             })
