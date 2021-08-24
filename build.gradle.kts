@@ -65,7 +65,8 @@ tasks.register<Copy>("copyWebApp") {
 
 tasks.withType<KotlinCompile> {
 	// So that all the tasks run with ./gradlew build
-	// TODO We should not run our react app on the same port
+	// TODO This task copies all the js files to our static web folder (public and served automatically by spring)
+	//  but we should run our client on localhost:3000
 //	dependsOn("copyWebApp")
 	kotlinOptions {
 		freeCompilerArgs = listOf("-Xjsr305=strict")

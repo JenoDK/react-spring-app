@@ -20,12 +20,19 @@ $login_width_limit: 500px;
     padding: 35px;
 
     @media screen and (max-width: $login_width_limit + 40) {
-        width: 80%;
-        padding: 20px;
+        width: 95%;
+        padding: 10px 5px 5px;
+        margin-top: 10px;
     }
 
     .form-group {
         text-align: start;
+    }
+
+    .card-body {
+        @media screen and (max-width: $login_width_limit + 40) {
+            padding: 0.5rem;
+        }
     }
 }
 

@@ -14,6 +14,10 @@ export function callApi(url: String, opts?: RequestInit) {
     return fetch(API_BASE_URL + url, opts)
         .then(response => {
             if (!response.ok) {
+                if (401 === response.status && localStorage.getItem(ACCESS_TOKEN) !== null) {
+                    // Token is expired, we remove it
+                    localStorage.removeItem(ACCESS_TOKEN)
+                }
                 return Promise.reject(response);
             }
             return response;

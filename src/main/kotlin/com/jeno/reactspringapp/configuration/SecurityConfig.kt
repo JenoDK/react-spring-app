@@ -19,6 +19,9 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import org.springframework.web.filter.CorsFilter
 
 
 @Configuration
@@ -48,7 +51,7 @@ class SecurityConfig(
 				.httpBasic().disable()
 				.exceptionHandling()
 					.authenticationEntryPoint(RestAuthenticationEntryPoint())
-				.and()
+					.and()
 				.authorizeRequests()
 					.antMatchers("/",
 							"/#",
@@ -110,5 +113,18 @@ class SecurityConfig(
 	fun passwordEncoder(): PasswordEncoder {
 		return BCryptPasswordEncoder()
 	}
+
+	// TODO see if we need CORS this open
+//	@Bean
+//	fun corsFilter(): CorsFilter? {
+//		val source = UrlBasedCorsConfigurationSource()
+//		val config = CorsConfiguration()
+//		config.allowCredentials = true
+//		config.setAllowedOriginPatterns(listOf("*"))
+//		config.addAllowedHeader("*")
+//		config.addAllowedMethod("*")
+//		source.registerCorsConfiguration("/**", config)
+//		return CorsFilter(source)
+//	}
 
 }

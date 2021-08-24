@@ -14,6 +14,7 @@ import {defaultErrorLogging, getCurrentUser} from "./utils/ApiUtils";
 import {ACCESS_TOKEN} from "./constants/Constants";
 import {Test} from "./containers/test/Test";
 import {PrivateRoute} from "./containers/common/PrivateRoute";
+import {Toolbar} from "./containers/navbar/Toolbar";
 
 interface User {
     id: string;
@@ -115,35 +116,6 @@ class App extends Component<RouteComponentProps<any>, AppState> {
         );
     }
 
-}
-
-function Toolbar() {
-    const authContext = useContext(AuthContext)
-    return <Navbar collapseOnSelect expand="sm" bg="dark" variant="dark">
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse id="responsive-navbar-nav">
-            <Nav className="mr-auto">
-                <LinkContainer to="/">
-                    <Nav.Link href="#">Home</Nav.Link>
-                </LinkContainer>
-                <LinkContainer to="/clients">
-                    <Nav.Link href="#">Clients</Nav.Link>
-                </LinkContainer>
-                <LinkContainer to="/test">
-                    <Nav.Link href="#">Tests</Nav.Link>
-                </LinkContainer>
-                {authContext.authenticated ?
-                    <LinkContainer to="/logout">
-                        <Nav.Link href="#">Logout</Nav.Link>
-                    </LinkContainer>
-                    :
-                    <LinkContainer to="/login">
-                        <Nav.Link href="#">Login</Nav.Link>
-                    </LinkContainer>
-                }
-            </Nav>
-        </Navbar.Collapse>
-    </Navbar>
 }
 
 function Logout(props: RouteComponentProps<any>) {

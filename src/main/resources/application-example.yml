@@ -1,0 +1,30 @@
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: react-spring
+      spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: $id.apps.googleusercontent.com
+            client-secret: $secret
+            scope:
+              - email
+              - profile
+          facebook:
+            client-id: $id
+            client-secret: $secret
+            scope:
+              - email
+              - public_profile
+logging:
+  level:
+    org.springframework.security: DEBUG
+application:
+  auth:
+    tokenSecret: $token_secret
+    tokenExpirationMsec: 172800000

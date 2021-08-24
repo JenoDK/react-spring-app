@@ -146,8 +146,15 @@ class LoginForm extends Component<LoginProps, LoginFormState> {
                 this.setState({ isLoading: false })
             })
             .catch(error => {
-                this.setState({ error: "Something went wrong, please try again." })
                 this.setState({ isLoading: false })
+                if (error instanceof Response) {
+                    error.text()
+                        .then(errorText => {
+                            this.setState({error: errorText})
+                        })
+                } else {
+                    this.setState({ error: "Something went wrong, please try again." })
+                }
             })
     }
 

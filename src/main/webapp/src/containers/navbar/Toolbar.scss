@@ -1,0 +1,29 @@
+$small: 350px;
+
+.nav-item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.navbar-nav {
+    @media screen and (max-width: $small) {
+        flex-direction: row;
+    }
+}
+
+.navbar-icon {
+    width: 25px;
+    height: 25px;
+
+    @media screen and (max-width: $small) {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.navbar-item-contents {
+    @media screen and (max-width: $small) {
+        display: none;
+    }
+}

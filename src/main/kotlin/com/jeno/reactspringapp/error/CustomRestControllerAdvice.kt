@@ -1,11 +1,11 @@
 package com.jeno.reactspringapp.error
 
-import com.jeno.reactspringapp.data.controller.AuthController
 import com.jeno.reactspringapp.error.exception.ResourceNotFoundException
 import com.jeno.reactspringapp.error.exception.ValidationException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.AuthenticationException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
@@ -26,5 +26,10 @@ class CustomRestControllerAdvice: ResponseEntityExceptionHandler() {
 	@ExceptionHandler(ResourceNotFoundException::class)
 	fun resourceNotFoundException(resourceNotFoundException: ResourceNotFoundException): ResponseEntity<String> {
 		return ResponseEntity<String>(resourceNotFoundException.message, HttpStatus.NOT_FOUND)
+	}
+
+	@ExceptionHandler(AuthenticationException::class)
+	fun resourceNotFoundException(authException: AuthenticationException): ResponseEntity<String> {
+		return ResponseEntity<String>(authException.message, HttpStatus.UNAUTHORIZED)
 	}
 }
